@@ -3,6 +3,18 @@ This is a git repository that is used for educational
 purposes in order to learn key git concepts and
 typical work flows.
 
+# History
+1. Created initial commit.
+2. Added introduction to README.md.
+3. Developer A adds the history information along with this line.
+4. Developer B adds information about common git actions, starting with git log.
+Developer B started before Developer A delivered their commit so Developer B
+**merged** origin/main into their local main branch to get the latest changes.
+This line was added in the merge commit in order to align with changes to the
+code that was done by someone else. Developer A introduced the concept of the
+history section, so now Developer B needs to fix their commit to align with how
+things work now.
+
 # Common actions
 
 ## Inspect changes to branches and commits
