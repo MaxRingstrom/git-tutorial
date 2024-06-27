@@ -18,6 +18,7 @@ things work now.
 merge.
 6. Developer A adds a section describing how to bring in other people's changes
 using rebase.
+7. Developer B explains how to see the changes made by a commit
 
 # Common actions
 
@@ -90,6 +91,32 @@ git log 13430ab..98cfed0
 git log main..98cfed0
 git log 13430ab..origin/main
 ```
+
+### See changes made by a commit
+```
+> git show 13430ab
+commit 13430ab22e3354ca168a1213c529f1a1e464af72
+Author: Developer A <developer.a@company.com>
+Date:   Wed Jun 26 08:25:53 2024 +0200
+
+    Developer A: Add introduction to README.md
+
+diff --git a/README.md b/README.md
+index e69de29..5afebdc 100644
+--- a/README.md
++++ b/README.md
+@@ -0,0 +1,4 @@
++# Introduction
++This is a git repository that is used for educational
++purposes in order to learn key git concepts and
++typical work flows.
+
+```
+
+The `git show` command can be used to show information about a commit. It also
+includes the file modifications that a commit does. In the above output we can
+see that the README.md file was modified. `a/filename` refers to the file before
+the commit was applied and `b/filename` the commit's modifications.
 
 ## Bring in other peoples changes
 When other people have made commits to the same branch that you are working on,
