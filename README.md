@@ -19,6 +19,8 @@ merge.
 6. Developer A adds a section describing how to bring in other people's changes
 using rebase.
 7. Developer B explains how to see the changes made by a commit
+8. Developer B explains how to find out the commit that was the last to modify
+a line in a file.
 
 # Common actions
 
@@ -117,6 +119,27 @@ The `git show` command can be used to show information about a commit. It also
 includes the file modifications that a commit does. In the above output we can
 see that the README.md file was modified. `a/filename` refers to the file before
 the commit was applied and `b/filename` the commit's modifications.
+
+### See which commit was the last to modify a line
+Sometimes it might be of interest to get more information about one or more lines
+in a file. You might not understand why they are the way they are or you might
+want to know when a change was made. If you're into pointing fingers then you
+might want to know who was responsible for a specific change to a file.
+
+This can be achieved by using the rather aggressively named command 'git blame'.
+```
+> git blame README.md
+13430ab2 (Developer A 2024-06-26 08:25:53 +0200   1) # Introduction
+13430ab2 (Developer A 2024-06-26 08:25:53 +0200   2) This is a git repository that is used for educational
+13430ab2 (Developer A 2024-06-26 08:25:53 +0200   3) purposes in order to learn key git concepts and
+13430ab2 (Developer A 2024-06-26 08:25:53 +0200   4) typical work flows.
+...
+```
+This will show you all lines in the README.md file and annotate each line with
+last commit to modify the line as well as the author of the commit and a time stamp.
+
+You can then use `git show` on the commit to see the commit message for the commit
+which might give you a better understanding on why the line was modified.
 
 ## Bring in other peoples changes
 When other people have made commits to the same branch that you are working on,
