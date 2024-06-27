@@ -16,6 +16,8 @@ history section, so now Developer B needs to fix their commit to align with how
 things work now.
 5. Developer A now adds a section on bringing in other people's changes using
 merge.
+6. Developer A adds a section describing how to bring in other people's changes
+using rebase.
 
 # Common actions
 
@@ -185,3 +187,51 @@ If you have previous experience with git and have solved conflicts, you can ofte
 see three columns in your merge tool, where one of the column is named `Base`.
 This column shows what a specific file looked like in the `base` commit.
 
+### Rebase
+When someone else has added commits to the remote branch the problem is that
+you have based your work on a commit that is not the newest commit.
+
+You could reset your branch so that it points to the latest remote commit and then
+redo your work by modifying the files and creating new commits for what you had
+previously done. Then your commit will be based on the latest commit on the remote
+branch and you will be able to push your work without any problems.
+
+This is basically what a rebase does for you. It resets you current branch
+to the commit that you rebase **on** and applies all your commits **one by one**
+in the order that they were originally created.
+
+Since the repository no longer looks the same as it did when the commits where
+first created you have to modify your changes so that they work correctly given
+the new state of the repository. In a rebase this is done **per commit** when
+they are re-applied. Compare this to a *merge* where any inconsistencies are fixed
+in one single commit placed **after** your commits and the new commits on the remote
+branch.
+
+This is how you do a rebase:
+```
+// You are on a branch, such as the local main branch
+git checkout main
+
+// Update the cache so that you can reference the latest commits on the remote
+// repository
+git fetch
+
+// Rebase your work on the remote main branch
+git rebase origin/main
+
+// Git will automatically reset your branch to the origin/main commit and
+// apply your commits one by one (creating new commits doing the same changes).
+// Git will halt the process if any of your old commits modify the same files
+// as the new commits on the origin/main branch.
+
+// Git halts before applying the old commit and modifies the working tree so that
+// all file changes that were originally made are present.
+
+// Fix the conflicts
+// Stage modified files using git add
+
+// Commit the new modified version of the commit that failed
+git commit
+
+// The above steps continue until all old commits have been re-applied.
+```
