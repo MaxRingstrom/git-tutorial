@@ -21,6 +21,8 @@ using rebase.
 7. Developer B explains how to see the changes made by a commit
 8. Developer B explains how to find out the commit that was the last to modify
 a line in a file.
+9. Developer A adds an example showing how Developer B did a rebase in order
+to deliver the previous two commits.
 
 # Common actions
 
@@ -285,3 +287,85 @@ git commit
 
 // The above steps continue until all old commits have been re-applied.
 ```
+
+#### Example
+Developer B did a rebase when delivering `a604f6e`.
+
+The advantage and disadvantage with doing a rebase is that you modify the history
+of your branch(!). So now that we look at the commit log, it will look as if
+Developer B always had the latest commits on their branch and never had to bring
+in other people's changes.
+
+```
+>  git log --graph --oneline --abbrev-commit a604f6e
+* a604f6e (HEAD -> main, origin/main) Explain how to see the last commit to modify a line
+* d53eff7 Explain how to see a commit's modifications
+* 2729faa Developer A: Describe 'git rebase'
+* ebcbfb5 (tag: old_base) Developer A: Describe 'git merge'
+*   25c5ed2 Merge remote-tracking branch 'origin/main'
+|\
+| * 98cfed0 Developer A: Add history to README.md
+* | d685dbd Developer B: Describe git log
+|/
+* 13430ab Developer A: Add introduction to README.md
+* c7921eb Inital commit
+
+```
+
+But if we look at the commits that where on the branch before the rebase along
+with the rebased commits we can see what has happened.
+
+```
+> git log --graph --date-order --abbrev-commit --oneline commit_before_rebase commit_after_rebase
+* a604f6e (HEAD -> main, tag: commit_after_rebase, origin/main) Explain how to see the last commit to modify a line
+* d53eff7 Explain how to see a commit's modifications
+| * 2e62304 (tag: commit_before_rebase) Explain how to see the last commit to modify a line
+| * c385154 Explain how to see a commit's modifications
+* | 2729faa (tag: new_base) Developer A: Describe 'git rebase'
+|/
+* ebcbfb5 (tag: old_base) Developer A: Describe 'git merge'
+*   25c5ed2 Merge remote-tracking branch 'origin/main'
+|\
+* | d685dbd Developer B: Describe git log
+| * 98cfed0 Developer A: Add history to README.md
+|/
+* 13430ab Developer A: Add introduction to README.md
+* c7921eb Inital commit
+
+```
+
+Take a look at the tags that has been added for clarity:
+| Tag | Description |
+| :--- | :--- |
+| old_base | The commit that Developer B first based their work on. |
+| commit_before_rebase | The last commit that Developer B did before realising that someone else had pushed commits to the remote branch. |
+| new_base | The latest commit on the remote branch when Developer B started their rebase. |
+| commit_after_rebase | The new latest commit after Developer B has `rebased`their work on the latest commit on the remote branch. |
+
+What you should take note of here is:
+- The commits before the rebase still exist, but the branch no longer has them
+on it.
+- After the rebase there will be new commits with the same commit message but
+other IDs. This is because the rebase re-applies the old commits on the new
+base commit, thus creating new commits. These new commits should do the same
+thing that the old commits did, but may need to do it differently due to how the
+new commits on the remote branch has modified the repository since they were first
+created.
+
+**WARNING**: When you do a rebase you change your branche's history. If someone
+else is working on the same branch as you, then when you push your changed history, 
+you will make the history of that branch look different on their remote branch
+as compared to their locally checked out branch.
+
+Remember that you create new commits for each of the old commits on your branch.
+Any person that works on the same branch after you have pushed your new commits
+will see the old commits on their branch and the new commits on the remote branch.
+
+They will see what looks like duplicate commits.
+
+There are ways to handle this but they require good knowledge about git so a
+good policy is to **Never rebase a branch that you share with someone else**.
+
+This policy should be followed until all involved parties understand exactly
+what a rebase does, are fluent in looking at commit graphs and commit
+modifications, and are comfortable with doing what is called an interactive rebase.
