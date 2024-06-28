@@ -29,6 +29,7 @@ to deliver the previous two commits.
 does because Developer B want to base their description of interactive rebase on the
 partial work that Developer A has done. Developer A has described what git cherry-pick
 does but has not yet delivered the entire feature to the main branch.
+13. Developer B describes interactive rebase
 
 # Common actions
 
@@ -482,6 +483,7 @@ It is quite common to create many commits when implementing something and all
 commits are not necessarily important to keep. You might see that the commit
 message for one of your commits is wrong and you want to change it.
 
+### Modifying the last commit
 You can modify the last commit that you did using `git commit --amend` which
 does the following:
 1. Removes the previous commit
@@ -497,3 +499,50 @@ messing up their commit history, so use with caution. It is ok to do during your
 normal development on your local branch as long as you only change commits that
 have not been delivered to a shared branch.
 modifications, and are comfortable with doing what is called an interactive rebase.
+
+### Modifying earlier commits
+It is possible to modify the git history in many ways using what is called an
+**interactive rebase**.
+
+The basic procedure is to start a rebase as you do when changing which commit
+you base your work on after someone has updated the remote branch. The normal
+rebase use case is to apply all your commits one after the other on the new
+base commit.
+
+By passing `--interactive` to the rebase command, you'll be able to say to
+git what to do with each commit that would be re-applied.
+
+You can do the following things:
+| Action | Description |
+| :-- | :-- |
+| Pick | Just apply the commit as is typically done in a rebase. A rebase does a cherry-pick for each old commit. |
+| Reword | Apply the commit but stop and ask for an updated commit message. |
+| Edit | Apply the commit, but stop and allow the user to modify files and amend the commit. |
+| Squash | Combine the commit with it's previous commit and allow the user to modify the combined commit message. |
+
+If you want to modify commits on your branch, you can do an interactive rebase
+with one of your earlier commits as the new base. This allows you to specify
+what to do with all later commits as they are applied one by one.
+
+When modifying your own branch you can modify all commits that are on your
+branch but not on the branch you will deliver to. So the earliest commit that
+you can use as a new base in an interactive rebase is the parent commit of your
+first local commit.
+
+You can find this by looking at you git history but here is a command that does
+it automatically for you.
+
+You can see the last shared commit between two branches using the `git merge-base`
+command.
+```
+> git merge-base main HEAD
+fc17093f849a7b5834f86f1d6a7579719693df60
+```
+This will find the latest shared commit between the main branch and your current
+commit.
+
+You can then do an interactive rebase:
+```
+> git rebase --interactive fc17093f849a7b5834f86f1d6a7579719693df60
+```
+
