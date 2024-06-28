@@ -24,6 +24,7 @@ a line in a file.
 9. Developer A adds an example showing how Developer B did a rebase in order
 to deliver the previous two commits.
 10. Developer B starts to describe ways of working related to feature branches.
+11. Developer B describes `git commit --amend`
 
 # Common actions
 
@@ -457,3 +458,24 @@ git push
   what has changed on multiple branches. This is even more challenging if you
   have feature branches based on other feature branches or if more than one
   person is working on the same feature branch.
+
+# Advanced actions
+## Re-write your commit history for readability and simplicity
+It is quite common to create many commits when implementing something and all
+commits are not necessarily important to keep. You might see that the commit
+message for one of your commits is wrong and you want to change it.
+
+You can modify the last commit that you did using `git commit --amend` which
+does the following:
+1. Removes the previous commit
+2. Brings in the changes done by the previous commit to the working tree
+3. Applies the changes that you have staged before running the command
+4. Asks you for a commit message
+5. Creates the new commit. (Which replaces the old one)
+
+You don't really modify a commit, you replace it with a new one.
+
+If this commit has already been pushed so that someone else has it, you'll end up
+messing up their commit history, so use with caution. It is ok to do during your
+normal development on your local branch as long as you only change commits that
+have not been delivered to a shared branch.
