@@ -34,6 +34,8 @@ does but has not yet delivered the entire feature to the main branch.
 interactive rebase.
 15. Developer A merges in latest changes from main (step 10 to 14)
 16. Developer A finishes the git cherry-pick feature.
+17. Developer B describes `git revert` after reverting Developer A's commit done
+in between 16 and 17.
 # Common actions
 
 ## Inspect changes to branches and commits
@@ -379,6 +381,39 @@ good policy is to **Never rebase a branch that you share with someone else**.
 This policy should be followed until all involved parties understand exactly
 what a rebase does, are fluent in looking at commit graphs and commit
 modifications, and are comfortable with doing what is called an interactive rebase.
+
+## Undo commits
+If someone has pushed a commit that should not have been pushed, you can easily
+`revert`it using the `git revert` command.
+
+Git will look at all modifications done by the commit to revert and apply the
+reverse modification instead.
+
+So if "commit A" changes a line from "Hello from me!" to "Hello from you!", then
+the reverting commit will change "Hello from you!" to "Hello from me!".
+
+Developer B reverted Developer A's commit in `389fa2`:
+```
+* commit 389fa20 (HEAD -> main, origin/main)
+| Author: Developer B <developer.b@company.com>
+| Date:   Fri Jun 28 13:51:53 2024 +0200
+|
+|     Revert "Add a cool unprofessional banner"
+|
+|     Reverting this since it is unprofessional and should be
+|     removed.
+|
+|     This reverts commit c3178495b888ace569f99bec2d374f021c5881c6.
+|
+* commit c317849
+| Author: Developer A <developer.a@company.com>
+| Date:   Fri Jun 28 13:50:49 2024 +0200
+|
+|     Add a cool unprofessional banner
+|
+*   commit 55bd398
+
+```
 
 ## Different work flows
 
