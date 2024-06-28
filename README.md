@@ -24,6 +24,8 @@ a line in a file.
 9. Developer A adds an example showing how Developer B did a rebase in order
 to deliver the previous two commits.
 10. Developer A explains what git cherry-pick does
+11. Developer A starts on giving an example of a cherry-pick but doesn't finish
+    the work yet.
 
 # Common actions
 
@@ -383,3 +385,9 @@ main branch.
 You can do this using the `git cherry-pick` command which takes the file
 modifications and commit message from a commit and creates a new commit
 with that information on your current branch.
+
+#### Example
+This is how you can cherry-pick a commit:
+```
+// TODO - Add example here
+```
