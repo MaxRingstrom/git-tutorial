@@ -23,6 +23,7 @@ using rebase.
 a line in a file.
 9. Developer A adds an example showing how Developer B did a rebase in order
 to deliver the previous two commits.
+10. Developer B starts to describe ways of working related to feature branches.
 
 # Common actions
 
@@ -369,3 +370,90 @@ good policy is to **Never rebase a branch that you share with someone else**.
 This policy should be followed until all involved parties understand exactly
 what a rebase does, are fluent in looking at commit graphs and commit
 modifications, and are comfortable with doing what is called an interactive rebase.
+
+## Different work flows
+
+How you organize the way that multiple developers work with a shared git
+repository is important. The day-to-day work will run a lot smoother if everyone
+works the same way.
+
+### To use feature branches or not
+#### Everyone works on the main branch
+The most basic way of working with git is to use the same branch for everyone.
+
+You check out the main branch and make your commits. You merge in changes that
+are pushed to the remote branch and you push your changes when you are done.
+
+When it is time for a release you set a tag on the release commit in the main
+branch and you continue development.
+
+##### Advantages
+- Doesn't require much git knowledge
+
+##### Disadvantages
+- Your work is not backed up until you have pushed your commits
+- When you push your commits, the work is delivered directly to everyone else.
+This means that there is no intermediate step where the code can be reviewed and
+tested in order to prevent "breaking the build" or delivering code that is not up
+to standard. A build server can't build and test the code.
+- You can't easily see which commits belong to which feature. It is normal when
+developing to make many commits when developing a specific feature. It may be
+that the project only works properly when the last commit is finished. If you
+check out any of the intermediate commits for the feature, you might not be able
+to use the system.
+
+#### Each feature is developed on a 'feature branch'
+You create a new branch for each feature and create all necessary commits on
+that branch.
+
+A new branch can be created by using the `git checkout` command with an
+additional `-b` flag. This will create a branch with the current commit (HEAD)
+as parent and check out that branch.
+
+```
+// Go to the branch that you want to base your work on
+> git checkout main
+
+// Make sure you have the latest code
+> git pull
+
+// Create your feature branch
+> git checkout -b feature/my_new_feature
+
+```
+
+The feature branches are then typically delivered to the main branch using
+`git merge`. Here's what that would look like if you do it manually. This is
+typically done automatically at the push of a button when you use code review
+tools.
+
+```
+// Check out the branch to deliver the feature branch commits to (target branch)
+git checkout main
+
+// Make sure to have the latest commits on the target branch
+git pull
+
+// Create a merge commit with the current commit and the last commit on the
+// feature branch as parents. The --no-ff flag makes sure that a merge commit
+// is always created even if it isn't necessary. You can read about what
+// *fast forward* is if you want to know more.
+git merge --no-ff feature/my_new_feature
+
+// Push the merge commit
+git push
+```
+
+##### Advantages
+- You can push commits to your branch without affecting others, thus backing
+  up your work.
+- You can allow others, such as build servers and code review tools, to access
+  your changes before they are delivered to the main branch.
+- All commits related to a feature are part of a separate track in the commit
+  history and can be easily identified.
+
+##### Disadvantages
+- There's some additional complexity involved since you have to keep track of
+  what has changed on multiple branches. This is even more challenging if you
+  have feature branches based on other feature branches or if more than one
+  person is working on the same feature branch.
