@@ -23,9 +23,16 @@ using rebase.
 a line in a file.
 9. Developer A adds an example showing how Developer B did a rebase in order
 to deliver the previous two commits.
-10. Developer A explains what git cherry-pick does
-11. Developer A starts on giving an example of a cherry-pick but doesn't finish
-    the work yet.
+10. Developer B starts to describe ways of working related to feature branches.
+11. Developer B describes `git commit --amend`
+12. Developer B cherry-pick commit by Developer A that explains what git cherry-pick
+does because Developer B want to base their description of interactive rebase on the
+partial work that Developer A has done. Developer A has described what git cherry-pick
+does but has not yet delivered the entire feature to the main branch.
+13. Developer B describes interactive rebase
+14. Developer B gives an example of the output shown in the beginning of an
+interactive rebase.
+15. Developer A merges in latest changes from main (step 10 to 14)
 
 # Common actions
 
@@ -373,6 +380,12 @@ This policy should be followed until all involved parties understand exactly
 what a rebase does, are fluent in looking at commit graphs and commit
 modifications, and are comfortable with doing what is called an interactive rebase.
 
+## Different work flows
+
+How you organize the way that multiple developers work with a shared git
+repository is important. The day-to-day work will run a lot smoother if everyone
+works the same way.
+
 ### Cherry-pick
 Sometimes you want to get changes made by one or more commits found on another
 branch, without bringing in all changes on that branch.
@@ -391,3 +404,173 @@ This is how you can cherry-pick a commit:
 ```
 // TODO - Add example here
 ```
+
+### To use feature branches or not
+#### Everyone works on the main branch
+The most basic way of working with git is to use the same branch for everyone.
+
+You check out the main branch and make your commits. You merge in changes that
+are pushed to the remote branch and you push your changes when you are done.
+
+When it is time for a release you set a tag on the release commit in the main
+branch and you continue development.
+
+##### Advantages
+- Doesn't require much git knowledge
+
+##### Disadvantages
+- Your work is not backed up until you have pushed your commits
+- When you push your commits, the work is delivered directly to everyone else.
+This means that there is no intermediate step where the code can be reviewed and
+tested in order to prevent "breaking the build" or delivering code that is not up
+to standard. A build server can't build and test the code.
+- You can't easily see which commits belong to which feature. It is normal when
+developing to make many commits when developing a specific feature. It may be
+that the project only works properly when the last commit is finished. If you
+check out any of the intermediate commits for the feature, you might not be able
+to use the system.
+
+#### Each feature is developed on a 'feature branch'
+You create a new branch for each feature and create all necessary commits on
+that branch.
+
+A new branch can be created by using the `git checkout` command with an
+additional `-b` flag. This will create a branch with the current commit (HEAD)
+as parent and check out that branch.
+
+```
+// Go to the branch that you want to base your work on
+> git checkout main
+
+// Make sure you have the latest code
+> git pull
+
+// Create your feature branch
+> git checkout -b feature/my_new_feature
+
+```
+
+The feature branches are then typically delivered to the main branch using
+`git merge`. Here's what that would look like if you do it manually. This is
+typically done automatically at the push of a button when you use code review
+tools.
+
+```
+// Check out the branch to deliver the feature branch commits to (target branch)
+git checkout main
+
+// Make sure to have the latest commits on the target branch
+git pull
+
+// Create a merge commit with the current commit and the last commit on the
+// feature branch as parents. The --no-ff flag makes sure that a merge commit
+// is always created even if it isn't necessary. You can read about what
+// *fast forward* is if you want to know more.
+git merge --no-ff feature/my_new_feature
+
+// Push the merge commit
+git push
+```
+
+##### Advantages
+- You can push commits to your branch without affecting others, thus backing
+  up your work.
+- You can allow others, such as build servers and code review tools, to access
+  your changes before they are delivered to the main branch.
+- All commits related to a feature are part of a separate track in the commit
+  history and can be easily identified.
+
+##### Disadvantages
+- There's some additional complexity involved since you have to keep track of
+  what has changed on multiple branches. This is even more challenging if you
+  have feature branches based on other feature branches or if more than one
+  person is working on the same feature branch.
+
+# Advanced actions
+## Re-write your commit history for readability and simplicity
+It is quite common to create many commits when implementing something and all
+commits are not necessarily important to keep. You might see that the commit
+message for one of your commits is wrong and you want to change it.
+
+### Modifying the last commit
+You can modify the last commit that you did using `git commit --amend` which
+does the following:
+1. Removes the previous commit
+2. Brings in the changes done by the previous commit to the working tree
+3. Applies the changes that you have staged before running the command
+4. Asks you for a commit message
+5. Creates the new commit. (Which replaces the old one)
+
+You don't really modify a commit, you replace it with a new one.
+
+If this commit has already been pushed so that someone else has it, you'll end up
+messing up their commit history, so use with caution. It is ok to do during your
+normal development on your local branch as long as you only change commits that
+have not been delivered to a shared branch.
+modifications, and are comfortable with doing what is called an interactive rebase.
+
+### Modifying earlier commits
+It is possible to modify the git history in many ways using what is called an
+**interactive rebase**.
+
+The basic procedure is to start a rebase as you do when changing which commit
+you base your work on after someone has updated the remote branch. The normal
+rebase use case is to apply all your commits one after the other on the new
+base commit.
+
+By passing `--interactive` to the rebase command, you'll be able to say to
+git what to do with each commit that would be re-applied.
+
+You can do the following things:
+| Action | Description |
+| :-- | :-- |
+| Pick | Just apply the commit as is typically done in a rebase. A rebase does a cherry-pick for each old commit. |
+| Reword | Apply the commit but stop and ask for an updated commit message. |
+| Edit | Apply the commit, but stop and allow the user to modify files and amend the commit. |
+| Squash | Combine the commit with it's previous commit and allow the user to modify the combined commit message. |
+
+If you want to modify commits on your branch, you can do an interactive rebase
+with one of your earlier commits as the new base. This allows you to specify
+what to do with all later commits as they are applied one by one.
+
+When modifying your own branch you can modify all commits that are on your
+branch but not on the branch you will deliver to. So the earliest commit that
+you can use as a new base in an interactive rebase is the parent commit of your
+first local commit.
+
+You can find this by looking at you git history but here is a command that does
+it automatically for you.
+
+You can see the last shared commit between two branches using the `git merge-base`
+command.
+```
+> git merge-base main HEAD
+fc17093f849a7b5834f86f1d6a7579719693df60
+```
+This will find the latest shared commit between the main branch and your current
+commit.
+
+You can then do an interactive rebase:
+```
+> git rebase --interactive fc17093f849a7b5834f86f1d6a7579719693df60
+// Your configured text editor opens with the following content:
+pick a6872ac Describe git commit --amend
+pick 0036c7b Describe git-cherrypick
+pick 928a85e Describe interactive rebase
+
+# Rebase fc17093..928a85e onto fc17093 (3 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# e, edit <commit> = use commit, but stop for amending
+# s, squash <commit> = use commit, but meld into previous commit
+
+```
+
+You can now modify the contents of your editor to say what you want to do for
+each commit. The rebase will start by resetting the current branch to the commit
+that you passed as an argument and then run each line from top to bottom in
+sequence. If you want to remove a commit, you can just remove the line. Abort
+by saving a file with no instructions, either by clearing the file or commenting
+out all lines.
