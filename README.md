@@ -30,6 +30,8 @@ does because Developer B want to base their description of interactive rebase on
 partial work that Developer A has done. Developer A has described what git cherry-pick
 does but has not yet delivered the entire feature to the main branch.
 13. Developer B describes interactive rebase
+14. Developer B gives an example of the output shown in the beginning of an
+interactive rebase.
 
 # Common actions
 
@@ -544,5 +546,24 @@ commit.
 You can then do an interactive rebase:
 ```
 > git rebase --interactive fc17093f849a7b5834f86f1d6a7579719693df60
+// Your configured text editor opens with the following content:
+pick a6872ac Describe git commit --amend
+pick 0036c7b Describe git-cherrypick
+pick 928a85e Describe interactive rebase
+
+# Rebase fc17093..928a85e onto fc17093 (3 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# e, edit <commit> = use commit, but stop for amending
+# s, squash <commit> = use commit, but meld into previous commit
+
 ```
 
+You can now modify the contents of your editor to say what you want to do for
+each commit. The rebase will start by resetting the current branch to the commit
+that you passed as an argument and then run each line from top to bottom in
+sequence. If you want to remove a commit, you can just remove the line. Abort
+by saving a file with no instructions, either by clearing the file or commenting
+out all lines.
