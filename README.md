@@ -36,6 +36,7 @@ interactive rebase.
 16. Developer A finishes the git cherry-pick feature.
 17. Developer B describes `git revert` after reverting Developer A's commit done
 in between 16 and 17.
+18. Moved git cherry-pick section to correct place and fixed minor wording issues.
 # Common actions
 
 ## Inspect changes to branches and commits
@@ -62,7 +63,7 @@ Date:   Tue Jun 25 08:05:23 2024 +0200
 
 `git log` shows commits and parent commits recursively so that you can see all
 commits from the specified commit to the first commit of the repository.
-`git log` is shorthand for `git log HEAD`. `HEAD` is a alias for the currently
+`git log` is shorthand for `git log HEAD`. `HEAD` is an alias for the currently
 checked out commit.
 
 There are many options that can be specified in order to modify what to see.
@@ -150,12 +151,12 @@ This can be achieved by using the rather aggressively named command 'git blame'.
 ...
 ```
 This will show you all lines in the README.md file and annotate each line with
-last commit to modify the line as well as the author of the commit and a time stamp.
+the last commit to modify the line as well as the author of the commit and a time stamp.
 
-You can then use `git show` on the commit to see the commit message for the commit
-which might give you a better understanding on why the line was modified.
+You can then use `git show` on the commit to see the commit message which might
+give you a better understanding on why the line was modified.
 
-## Bring in other peoples changes
+## Bring in other people's changes
 When other people have made commits to the same branch that you are working on,
 you'll have to bring in those changes in some way and modify what you are
 working on to fit the new state of the repository.
@@ -168,7 +169,7 @@ A common way of bringing in other people's changes is to merge the remote versio
 of your branch with your local version of the branch.
 
 **You combine your changes with someone else's changes and fix any issues that
-arrive in an additional commit.**
+arise in an additional commit.**
 
 A merge is done using the `git merge` command and will create a merge commit
 on the branch that you are currently on. You give the second branch to merge
@@ -260,7 +261,7 @@ redo your work by modifying the files and creating new commits for what you had
 previously done. Then your commit will be based on the latest commit on the remote
 branch and you will be able to push your work without any problems.
 
-This is basically what a rebase does for you. It resets you current branch
+This is basically what a rebase does for you. It resets your current branch
 to the commit that you rebase **on** and applies all your commits **one by one**
 in the order that they were originally created.
 
@@ -364,7 +365,7 @@ thing that the old commits did, but may need to do it differently due to how the
 new commits on the remote branch has modified the repository since they were first
 created.
 
-**WARNING**: When you do a rebase you change your branche's history. If someone
+**WARNING**: When you do a rebase you change your branch's history. If someone
 else is working on the same branch as you, then when you push your changed history, 
 you will make the history of that branch look different on their remote branch
 as compared to their locally checked out branch.
@@ -376,50 +377,11 @@ will see the old commits on their branch and the new commits on the remote branc
 They will see what looks like duplicate commits.
 
 There are ways to handle this but they require good knowledge about git so a
-good policy is to **Never rebase a branch that you share with someone else**.
+good policy is to **never rebase a branch that you share with someone else**.
 
 This policy should be followed until all involved parties understand exactly
 what a rebase does, are fluent in looking at commit graphs and commit
 modifications, and are comfortable with doing what is called an interactive rebase.
-
-## Undo commits
-If someone has pushed a commit that should not have been pushed, you can easily
-`revert`it using the `git revert` command.
-
-Git will look at all modifications done by the commit to revert and apply the
-reverse modification instead.
-
-So if "commit A" changes a line from "Hello from me!" to "Hello from you!", then
-the reverting commit will change "Hello from you!" to "Hello from me!".
-
-Developer B reverted Developer A's commit in `389fa2`:
-```
-* commit 389fa20 (HEAD -> main, origin/main)
-| Author: Developer B <developer.b@company.com>
-| Date:   Fri Jun 28 13:51:53 2024 +0200
-|
-|     Revert "Add a cool unprofessional banner"
-|
-|     Reverting this since it is unprofessional and should be
-|     removed.
-|
-|     This reverts commit c3178495b888ace569f99bec2d374f021c5881c6.
-|
-* commit c317849
-| Author: Developer A <developer.a@company.com>
-| Date:   Fri Jun 28 13:50:49 2024 +0200
-|
-|     Add a cool unprofessional banner
-|
-*   commit 55bd398
-
-```
-
-## Different work flows
-
-How you organize the way that multiple developers work with a shared git
-repository is important. The day-to-day work will run a lot smoother if everyone
-works the same way.
 
 ### Cherry-pick
 Sometimes you want to get changes made by one or more commits found on another
@@ -489,6 +451,45 @@ feature to be delivered.
 * commit 4faf9e6
 </pre>
 
+## Undo commits
+If someone has pushed a commit that should not have been pushed, you can easily
+`revert`it using the `git revert` command.
+
+Git will look at all modifications done by the commit to revert and apply the
+reverse modification instead.
+
+So if "commit A" changes a line from "Hello from me!" to "Hello from you!", then
+the reverting commit will change "Hello from you!" to "Hello from me!".
+
+Developer B reverted Developer A's commit in `389fa2`:
+```
+* commit 389fa20 (HEAD -> main, origin/main)
+| Author: Developer B <developer.b@company.com>
+| Date:   Fri Jun 28 13:51:53 2024 +0200
+|
+|     Revert "Add a cool unprofessional banner"
+|
+|     Reverting this since it is unprofessional and should be
+|     removed.
+|
+|     This reverts commit c3178495b888ace569f99bec2d374f021c5881c6.
+|
+* commit c317849
+| Author: Developer A <developer.a@company.com>
+| Date:   Fri Jun 28 13:50:49 2024 +0200
+|
+|     Add a cool unprofessional banner
+|
+*   commit 55bd398
+
+```
+
+## Different work flows
+
+How you organize the way that multiple developers work with a shared git
+repository is important. The day-to-day work will run a lot smoother if everyone
+works the same way.
+
 ### To use feature branches or not
 #### Everyone works on the main branch
 The most basic way of working with git is to use the same branch for everyone.
@@ -549,7 +550,7 @@ git pull
 // Create a merge commit with the current commit and the last commit on the
 // feature branch as parents. The --no-ff flag makes sure that a merge commit
 // is always created even if it isn't necessary. You can read about what
-// *fast forward* is if you want to know more.
+// "fast forward" is if you want to know more.
 git merge --no-ff feature/my_new_feature
 
 // Push the merge commit
@@ -591,7 +592,6 @@ If this commit has already been pushed so that someone else has it, you'll end u
 messing up their commit history, so use with caution. It is ok to do during your
 normal development on your local branch as long as you only change commits that
 have not been delivered to a shared branch.
-modifications, and are comfortable with doing what is called an interactive rebase.
 
 ### Modifying earlier commits
 It is possible to modify the git history in many ways using what is called an
@@ -605,7 +605,7 @@ base commit.
 By passing `--interactive` to the rebase command, you'll be able to say to
 git what to do with each commit that would be re-applied.
 
-You can do the following things:
+These are the most common options:
 | Action | Description |
 | :-- | :-- |
 | Pick | Just apply the commit as is typically done in a rebase. A rebase does a cherry-pick for each old commit. |
