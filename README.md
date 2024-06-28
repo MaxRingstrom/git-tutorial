@@ -32,7 +32,8 @@ does but has not yet delivered the entire feature to the main branch.
 13. Developer B describes interactive rebase
 14. Developer B gives an example of the output shown in the beginning of an
 interactive rebase.
-
+15. Developer A merges in latest changes from main (step 10 to 14)
+16. Developer A finishes the git cherry-pick feature.
 # Common actions
 
 ## Inspect changes to branches and commits
@@ -397,6 +398,61 @@ main branch.
 You can do this using the `git cherry-pick` command which takes the file
 modifications and commit message from a commit and creates a new commit
 with that information on your current branch.
+
+#### Example
+This is how you can cherry-pick a commit:
+```
+> git cherry-pick ID_OF_COMMIT
+```
+
+Developer B did a cherry-pick when working on the feature branch to describe
+interactive rebases. They cherry picked the "Describe git-cherrypick" that was
+part of an ongoing feature in order to continue without waiting for the full
+feature to be delivered.
+
+<pre>
+> git log --graph --abbrev-commit 0036c7b e53522
+<b>* commit 0036c7b
+| Author: Developer A <developer.a@company.com>
+| Date:   Fri Jun 28 09:32:00 2024 +0200
+|
+|     Describe git-cherrypick
+|
+|     (cherry picked from commit cc2a0d1563c5cde72bb90737cf91c4b2f9aa4ad8)
+|</b>
+* commit a6872ac
+| Author: Developer B <developer.b@company.com>
+| Date:   Fri Jun 28 11:25:00 2024 +0200
+|
+|     Describe git commit --amend
+|
+*   commit fc17093 (origin/main, main)
+|\  Merge: 4faf9e6 c52573b
+| | Author: Code review server <codereview@company.com>
+| | Date:   Fri Jun 28 11:06:25 2024 +0200
+| |
+| |     Merge branch 'feature/describe_feature_branches' into 'main'
+| |
+| * commit c52573b (origin/feature/describe_feature_branches, feature/describe_feature_branches)
+|/  Author: Developer B <developer.b@company.com>
+|   Date:   Fri Jun 28 11:01:29 2024 +0200
+|
+|       Describe feature branches
+|
+| * commit e535229 (origin/feature/describe_git_cherry_pick)
+| | Author: Developer A <developer.a@company.com>
+| | Date:   Fri Jun 28 11:13:13 2024 +0200
+| |
+| |     Work in progress - Giving example of git cherry-pick
+| |
+<b>| * commit cc2a0d1
+|/  Author: Developer A <developer.a@company.com>
+|   Date:   Fri Jun 28 09:32:00 2024 +0200
+|
+|       Describe git-cherrypick
+|</b>
+* commit 4faf9e6
+</pre>
 
 ### To use feature branches or not
 #### Everyone works on the main branch
