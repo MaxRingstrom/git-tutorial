@@ -23,6 +23,7 @@ using rebase.
 a line in a file.
 9. Developer A adds an example showing how Developer B did a rebase in order
 to deliver the previous two commits.
+10. Developer A explains what git cherry-pick does
 
 # Common actions
 
@@ -369,3 +370,16 @@ good policy is to **Never rebase a branch that you share with someone else**.
 This policy should be followed until all involved parties understand exactly
 what a rebase does, are fluent in looking at commit graphs and commit
 modifications, and are comfortable with doing what is called an interactive rebase.
+
+### Cherry-pick
+Sometimes you want to get changes made by one or more commits found on another
+branch, without bringing in all changes on that branch.
+
+It might be that the other branch is still being worked on or that a bug fix has
+been delivered to a release branch for an old version of your project. In the
+second case you might want to get that specific commit on your new version's
+main branch. 
+
+You can do this using the `git cherry-pick` command which takes the file
+modifications and commit message from a commit and creates a new commit
+with that information on your current branch.
