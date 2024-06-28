@@ -25,6 +25,10 @@ a line in a file.
 to deliver the previous two commits.
 10. Developer B starts to describe ways of working related to feature branches.
 11. Developer B describes `git commit --amend`
+12. Developer B cherry-pick commit by Developer A that explains what git cherry-pick
+does because Developer B want to base their description of interactive rebase on the
+partial work that Developer A has done. Developer A has described what git cherry-pick
+does but has not yet delivered the entire feature to the main branch.
 
 # Common actions
 
@@ -378,6 +382,19 @@ How you organize the way that multiple developers work with a shared git
 repository is important. The day-to-day work will run a lot smoother if everyone
 works the same way.
 
+### Cherry-pick
+Sometimes you want to get changes made by one or more commits found on another
+branch, without bringing in all changes on that branch.
+
+It might be that the other branch is still being worked on or that a bug fix has
+been delivered to a release branch for an old version of your project. In the
+second case you might want to get that specific commit on your new version's
+main branch. 
+
+You can do this using the `git cherry-pick` command which takes the file
+modifications and commit message from a commit and creates a new commit
+with that information on your current branch.
+
 ### To use feature branches or not
 #### Everyone works on the main branch
 The most basic way of working with git is to use the same branch for everyone.
@@ -479,3 +496,4 @@ If this commit has already been pushed so that someone else has it, you'll end u
 messing up their commit history, so use with caution. It is ok to do during your
 normal development on your local branch as long as you only change commits that
 have not been delivered to a shared branch.
+modifications, and are comfortable with doing what is called an interactive rebase.
